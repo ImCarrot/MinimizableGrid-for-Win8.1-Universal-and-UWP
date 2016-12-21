@@ -1,0 +1,48 @@
+﻿<Page
+    x:Class="MinimizableGrid.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MinimizableGrid"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:Converters="using:MinimizableGrid.Converters">
+
+    <Page.Resources>
+        <Converters:ScenarioBindingConverter x:Key="ScenarioConverter"/>
+    </Page.Resources>
+
+    <Grid Background="White">
+
+        <Button Name="HamburgerButton" Canvas.ZIndex="100" Foreground="White" VerticalAlignment="Top" HorizontalAlignment="Left" FontFamily="Segoe MDL2 Assets" BorderThickness="1" BorderBrush="{x:Null}" Content="&#xE700;" Height="50" Width="50" Tapped="HamburgerButton_Tapped">
+            <Button.Background>
+                <SolidColorBrush Color="DarkGray" Opacity="0.6"/>
+            </Button.Background>
+        </Button>
+
+        <SplitView x:Name="MySplitView" Style="{x:Null}" Background="Transparent" IsPaneOpen="False" 
+               CompactPaneLength="50" OpenPaneLength="300" DisplayMode="CompactInline">
+            <SplitView.PaneBackground>
+                <SolidColorBrush Color="Black" />
+            </SplitView.PaneBackground>
+
+            <SplitView.Pane>
+                <Grid RequestedTheme="Dark">
+                    <ListView x:Name="ScenarioControl" SelectionChanged="ScenarioControl_SelectionChanged" SelectionMode="Single"
+                              Width="320" VerticalAlignment="Top" Margin="0,52,0,12" RelativePanel.AlignTopWithPanel="True"
+                              ItemContainerStyle="{StaticResource NavMenuItemContainerStyle}">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Converter={StaticResource ScenarioConverter}}"/>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                </Grid>
+            </SplitView.Pane>
+            <SplitView.Content>
+                <Frame x:Name="ScenarioFrame"/>
+            </SplitView.Content>
+        </SplitView>
+
+    </Grid>
+</Page>
