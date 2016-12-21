@@ -113,17 +113,6 @@ namespace MinimizableGrid.CustomControls
             DependencyProperty.Register("OldStateValue", typeof(bool?), typeof(MinimisableGridClass), new PropertyMetadata(null));
 
 
-        //To provide reverse flow flexibility
-        public bool IsReverseSlide
-        {
-            get { return (bool)GetValue(IsReverseSlideProperty); }
-            set { SetValue(IsReverseSlideProperty, value); }
-        }
-
-        public static readonly DependencyProperty IsReverseSlideProperty = DependencyProperty.Register(
-        "IsReverseSlide", typeof(bool), typeof(MinimisableGridClass), new PropertyMetadata(false));
-
-
         //To change the speed for opening and closing...
         public double AnimationTime
         {
