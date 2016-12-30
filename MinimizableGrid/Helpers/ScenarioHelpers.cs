@@ -15,6 +15,8 @@ namespace MinimizableGrid.Helpers
         {
             new Scenario() { Title="Simple Minimize the Grid", ClassType=typeof(MinimizeTheGrid)},
             new Scenario() { Title="Header Changed On Minimize", ClassType=typeof(HeaderChangeOnMinimize)},
+            new Scenario() { Title="Minimize with visbility", ClassType=typeof(MinimizeWithVisibility)},
+            
         };
     }
     public class Scenario

@@ -20,11 +20,11 @@
 
         <!--Use FlowOrientation property to define the fadeout axis direction, Horrizonal or Vertical-->
         <!--The CompactPaneHeightWidth can be used to set visible pane height/width once minimized-->
-        <CustomControls:MinimisableGridClass x:Name="MyVerticalMinimizableGrid" FlowOrientation="Vertical" Visibility="{Binding ElementName=CurrentlyViewingToggleSwitch,Path=IsOn,Converter={StaticResource BoolToInverseVisibilityConverter}}" Height="300" CompactPaneHeightWidth="60"  Background="#FF0A7DD0" VerticalAlignment="Bottom">
-            <CustomControls:MinimisableGridClass.RowDefinitions>
+        <CustomControls:MinimizableGridControl x:Name="MyVerticalMinimizableGrid" FlowOrientation="Vertical" Visibility="{Binding ElementName=CurrentlyViewingToggleSwitch,Path=IsOn,Converter={StaticResource BoolToInverseVisibilityConverter}}" Height="300" CompactPaneHeightWidth="60"  Background="#FF0A7DD0" VerticalAlignment="Bottom">
+            <CustomControls:MinimizableGridControl.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
-            </CustomControls:MinimisableGridClass.RowDefinitions>
+            </CustomControls:MinimizableGridControl.RowDefinitions>
             <Grid Name="HeaderGrid" VerticalAlignment="Stretch" Height="60">
                 <Grid.Background>
                     <SolidColorBrush Color="Black" Opacity="0.5"/>
@@ -38,15 +38,15 @@
             <Grid Grid.Row="1" RequestedTheme="Dark">
                 <TextBlock Text="You can put any control here a button, a gridview, simple text or anything" FontSize="20" TextWrapping="WrapWholeWords" Margin="10"/>
             </Grid>
-        </CustomControls:MinimisableGridClass>
+        </CustomControls:MinimizableGridControl>
 
         <!--Use AnimationTime property to increase / decrease the speed, default is 0.5 seconds-->
         <!--use the MinimizeDirection property to define the fadeout direction, Top and Left or (Default)Bottom and Right-->
-        <CustomControls:MinimisableGridClass x:Name="MyHorrizontalMinimizableGrid" AnimationTime="0.3" FlowOrientation="Horizontal"  Visibility="{Binding ElementName=CurrentlyViewingToggleSwitch,Path=IsOn,Converter={StaticResource BoolToVisibilityConverter}}" Width="300" CompactPaneHeightWidth="60"  Background="#FF0A7DD0" VerticalAlignment="Stretch" HorizontalAlignment="Right">
-            <CustomControls:MinimisableGridClass.ColumnDefinitions>
+        <CustomControls:MinimizableGridControl x:Name="MyHorrizontalMinimizableGrid" AnimationTime="0.3" FlowOrientation="Horizontal"  Visibility="{Binding ElementName=CurrentlyViewingToggleSwitch,Path=IsOn,Converter={StaticResource BoolToVisibilityConverter}}" Width="300" CompactPaneHeightWidth="60"  Background="#FF0A7DD0" VerticalAlignment="Stretch" HorizontalAlignment="Right">
+            <CustomControls:MinimizableGridControl.ColumnDefinitions>
                 <ColumnDefinition Width="Auto"/>
                 <ColumnDefinition Width="*"/>
-            </CustomControls:MinimisableGridClass.ColumnDefinitions>
+            </CustomControls:MinimizableGridControl.ColumnDefinitions>
             <Grid Name="HorrizontalHeaderGrid" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Stretch">
                 <Grid.Background>
                     <SolidColorBrush Color="Black" Opacity="0.5"/>
@@ -56,6 +56,6 @@
             <Grid Grid.Column="1" RequestedTheme="Dark">
                 <TextBlock Text="You can put any control here a button, a gridview, simple text or anything" FontSize="20" TextWrapping="WrapWholeWords" Margin="10"/>
             </Grid>
-        </CustomControls:MinimisableGridClass>
+        </CustomControls:MinimizableGridControl>
     </Grid>
 </Page>

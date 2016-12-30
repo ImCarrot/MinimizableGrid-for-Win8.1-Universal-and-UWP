@@ -1,0 +1,42 @@
+﻿<Page
+    x:Class="MinimizableGrid.Scenarios.MinimizeWithVisibility"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:MinimizableGrid.Scenarios"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    xmlns:CustomControls="using:MinimizableGrid.CustomControls">
+    <Page.Resources>
+        <Storyboard x:Name="BlinkIdeaAnim" RepeatBehavior="Forever">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="IdeaImageGrid">
+                <EasingDoubleKeyFrame KeyTime="0:0:0.3" Value="0.5"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.6" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
+        </Storyboard>
+    </Page.Resources>
+
+    <ScrollViewer>
+        <Grid Background="#FF095F9C">
+            <TextBlock TextAlignment="Justify" Text="This senario demonstrates the use of minimizable grid away from the edges. You can place the Control anywhere on the screen and define the Horrizontal alignment to set the direction of the grid you want to be pinned/fixed while the other edge minimizes. Use the FlowOrientation properrty to define the type of minimize action. and accordingly set the horizontalAlignment/verticalAlignment. Also you can place multiple items in the Grid Like in this example, an image and a border. The ontents of the border would be set to fixed size in order to provide the minimize effect. Do remember to define the name of the border element in the MinimizingChildName property as shown in the example. This ways it allows to put multiple elements into the grid. For verticalOrientation set columnDefinitions and vertical alignment" Foreground="White" HorizontalAlignment="Left" MaxWidth="310" TextWrapping="WrapWholeWords" Margin="10" VerticalAlignment="Top"/>
+            <CustomControls:MinimizableGridControl x:Name="TryGrid" MinimizingChildName="HideableContent" BorderBrush="Black" Padding="10" BorderThickness="1" VerticalAlignment="Top" Width="400" HorizontalAlignment="Right" ReqMinimizeWithVisibility="True" Margin="20" CompactPaneHeightWidth="80" FlowOrientation="Horizontal" Background="#FF0A7DD0">
+                <CustomControls:MinimizableGridControl.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </CustomControls:MinimizableGridControl.ColumnDefinitions>
+                <Grid Name="IdeaImageGrid" Tapped="IdeaImageGrid_Tapped" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Background="Transparent">
+                    <Image Source="ms-appx:///Assets/IdeaImage.png" Height="60" Width="60" VerticalAlignment="Center"/>
+                </Grid>
+                <Border Name="HideableContent" >
+                    <TextBlock Foreground="White" FontSize="20" TextWrapping="Wrap" VerticalAlignment="Center">
+                    <Run Text="Did you know?"/>
+                    <LineBreak/>
+                    <Run Text="You can define multiple elements in a border and define the name of the border in the MinimizingChildName property to make them work like I do. Click on the bulb to minimize"/>
+                    </TextBlock>
+                </Border>
+
+            </CustomControls:MinimizableGridControl>
+
+        </Grid>
+    </ScrollViewer>
+</Page>

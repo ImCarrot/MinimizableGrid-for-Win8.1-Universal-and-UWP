@@ -30,8 +30,8 @@ namespace MinimizableGrid.Scenarios
       
         private void MinimizeClicked(object sender, RoutedEventArgs e)
         {
-            MyVerticalMinimizableGrid.IsMinimised = !MyVerticalMinimizableGrid.IsMinimised;
-            if(MyVerticalMinimizableGrid.IsMinimised)
+            MyVerticalMinimizableGrid.IsMinimized = !MyVerticalMinimizableGrid.IsMinimized;
+            if(MyVerticalMinimizableGrid.IsMinimized)
             {
                 MinimizeIcon.Icon = new SymbolIcon(Symbol.Upload);
                 MinimizeIcon.Label = "Maximize";
@@ -46,8 +46,8 @@ namespace MinimizableGrid.Scenarios
         private void HorrizontalMinimizeClicked(object sender, RoutedEventArgs e)
         {
 
-            MyHorrizontalMinimizableGrid.IsMinimised = !MyHorrizontalMinimizableGrid.IsMinimised;
-            if (MyHorrizontalMinimizableGrid.IsMinimised)
+            MyHorrizontalMinimizableGrid.IsMinimized = !MyHorrizontalMinimizableGrid.IsMinimized;
+            if (MyHorrizontalMinimizableGrid.IsMinimized)
             {
                 HorrizontalMinimizeIcon.Icon = new SymbolIcon(Symbol.Back);
                 HorrizontalMinimizeIcon.Label = "Maximize";

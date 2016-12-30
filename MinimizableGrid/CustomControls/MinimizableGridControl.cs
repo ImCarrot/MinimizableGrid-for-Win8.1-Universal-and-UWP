@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MinimizableGrid.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,15 +10,24 @@ using Windows.UI.Xaml.Media.Animation;
 
 namespace MinimizableGrid.CustomControls
 {
-    public class MinimisableGridClass : Grid
+    public class MinimizableGridControl : Grid
     {
+
+        public MinimizableGridControl()
+        {
+
+        }
+
+
         private double animationTime = 0.5;
 
-        public MinimisableGridClass CurrentElement;
+        private double PreviousHeightWidthForVisibility = 0;
+
+        public MinimizableGridControl CurrentElement;
 
         public event EventHandler<UIElement> OperationCompleted;
 
-        //sets the height of the visible pane when minimised.
+        //sets the height of the visible pane when Minimized.
         public double CompactPaneHeightWidth
         {
             get { return (double)GetValue(CompactPaneHeightWidthProperty); }
@@ -25,27 +35,120 @@ namespace MinimizableGrid.CustomControls
         }
 
         public static readonly DependencyProperty CompactPaneHeightWidthProperty =
-            DependencyProperty.Register("CompactPaneHeightWidth", typeof(double), typeof(MinimisableGridClass), new PropertyMetadata(0));
+            DependencyProperty.Register("CompactPaneHeightWidth", typeof(double), typeof(MinimizableGridControl), new PropertyMetadata(0.0));
+
+
+        //To make the panel Minimize away from the edges, use the ReqMinimizeWithVisibility
+        public bool ReqMinimizeWithVisibility
+        {
+            get { return (bool)GetValue(ReqMinimizeWithVisibilityProperty); }
+            set { SetValue(ReqMinimizeWithVisibilityProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for ReqMinimizeWithVisibility.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty ReqMinimizeWithVisibilityProperty =
+            DependencyProperty.Register("ReqMinimizeWithVisibility", typeof(bool), typeof(MinimizableGridControl), new PropertyMetadata(false));
+
 
 
         //Toggle's the Minimization for the grid
-        public bool IsMinimised
+        public bool IsMinimized
         {
-            get { return (bool)GetValue(IsMinimisedProperty); }
-            set { SetValue(IsMinimisedProperty, value); }
+            get { return (bool)GetValue(IsMinimizedProperty); }
+            set { SetValue(IsMinimizedProperty, value); }
         }
 
-        public static readonly DependencyProperty IsMinimisedProperty =
-            DependencyProperty.Register("IsMinimised", typeof(bool), typeof(MinimisableGridClass), new PropertyMetadata(default(bool), (o, e) => ((MinimisableGridClass)o).IsMinimisedChanged(o, e)));
+        public static readonly DependencyProperty IsMinimizedProperty =
+            DependencyProperty.Register("IsMinimized", typeof(bool), typeof(MinimizableGridControl), new PropertyMetadata(default(bool), (o, e) => ((MinimizableGridControl)o).IsMinimizedChanged(o, e)));
 
-        private void IsMinimisedChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        private void IsMinimizedChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var isMinimised = (bool)e.NewValue;
+            if(this.IsMinimized)
+            {
+                if (this.FlowOrientation == Orientation.Vertical)
+                    this.PreviousHeightWidthForVisibility = this.RenderSize.Height;
+                else
+                    this.PreviousHeightWidthForVisibility = this.RenderSize.Width;
+            }
+            if (ReqMinimizeWithVisibility)
+            {
+                PerformMinimizeWithVisibility(sender, e);
+            }
+            else
+            {
+                PerformSimpleMinizie(sender, e);
+            }
+        }
+
+        //Double animation to change height and width to minimize with visibility
+        private void PerformMinimizeWithVisibility(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            //Get the Child elemnts
+            var Parent = sender as MinimizableGridControl;
+            var childs = Parent.Children;
+
+            var MinimizingChild = (childs.FirstOrDefault(x => x as Border != null && ((Border)x).Name == MinimizingChildName)) as Border;
+
+            if(MinimizingChild!=null)
+            {
+                MinimizingChild.Height = MinimizingChild.ActualHeight;
+                MinimizingChild.Width = MinimizingChild.ActualWidth;
+            }
+            
+
+            DoubleAnimation anim;
+            var isMinimized = (bool)e.NewValue;
+            OldStateValue = (bool)e.OldValue;
+            if (OldStateValue != isMinimized)
+            {
+                CurrentElement = (MinimizableGridControl)sender;
+
+                if (IsMinimized)
+                {
+                    anim = new DoubleAnimation()
+                    {
+                        EnableDependentAnimation = true,
+                        From = PreviousHeightWidthForVisibility,
+                        To = CompactPaneHeightWidth,
+                        Duration = new Duration(new TimeSpan(0, 0, 1)),
+                        EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut }
+                    };
+                }
+                else
+                {
+                    anim = new DoubleAnimation()
+                    {
+                        EnableDependentAnimation = true,
+                        From = CompactPaneHeightWidth,
+                        To = PreviousHeightWidthForVisibility,
+                        Duration = new Duration(new TimeSpan(0, 0, 1)),
+                        EasingFunction = new CubicEase() { EasingMode = EasingMode.EaseOut }
+                    };
+                }
+
+                Storyboard.SetTarget(anim, CurrentElement);
+                if (FlowOrientation == Orientation.Vertical)
+                    Storyboard.SetTargetProperty(anim, "Height");
+                else
+                    Storyboard.SetTargetProperty(anim, "Width");
+
+                CurrentElement.SlideStoryBoard.Stop();
+                CurrentElement.SlideStoryBoard = new Storyboard();
+                CurrentElement.SlideStoryBoard.Children.Add(anim);
+                CurrentElement.SlideStoryBoard.Begin();
+
+            }
+        }
+
+        //Simple Minimize Translate x and y animation
+        private void PerformSimpleMinizie(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var isMinimized = (bool)e.NewValue;
             OldStateValue = (bool)e.OldValue;
             var VisiblePaneHeightWidth = CompactPaneHeightWidth;
-            if (OldStateValue != isMinimised)
+            if (OldStateValue != isMinimized)
             {
-                CurrentElement = (MinimisableGridClass)sender;
+                CurrentElement = (MinimizableGridControl)sender;
                 var PortionToHide = CurrentElement.ActualHeight;
                 CurrentElement.RenderTransform = new Windows.UI.Xaml.Media.TranslateTransform() { Y = 0, X = 0 };
 
@@ -67,7 +170,7 @@ namespace MinimizableGrid.CustomControls
                 CurrentElement.SlideStoryBoard = new Storyboard();
                 CurrentElement.SlideStoryBoard.Children.Add(animation);
 
-                if (!isMinimised)
+                if (!isMinimized)
                 {
                     //set the IsShowingMinimizedView to false as it's getting maximized.
                     this.IsShowingMinimizedView = false;
@@ -85,7 +188,7 @@ namespace MinimizableGrid.CustomControls
                 }
                 else
                 {
-                    
+
                     if (MinimizeDirection == MinimizeFlow.TowardsRightOrTowardsBottom)
                     {
                         animation.KeyFrames[0] = new EasingDoubleKeyFrame() { KeyTime = KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0)), Value = 0 };
@@ -101,6 +204,20 @@ namespace MinimizableGrid.CustomControls
             }
         }
 
+
+
+
+        public string MinimizingChildName
+        {
+            get { return (string)GetValue(MinimizingChildNameProperty); }
+            set { SetValue(MinimizingChildNameProperty, value); }
+        }
+
+        public static readonly DependencyProperty MinimizingChildNameProperty =
+            DependencyProperty.Register("MinimizingChildName", typeof(string), typeof(MinimizableGridControl), new PropertyMetadata(String.Empty));
+
+
+
         //To fetch the old values just in case it's needed to restore the grid back to it's old state
         //for example: after popping it up during a search and bringing it back after search is finished.
         public bool? OldStateValue
@@ -110,7 +227,7 @@ namespace MinimizableGrid.CustomControls
         }
 
         public static readonly DependencyProperty OldStateValueProperty =
-            DependencyProperty.Register("OldStateValue", typeof(bool?), typeof(MinimisableGridClass), new PropertyMetadata(null));
+            DependencyProperty.Register("OldStateValue", typeof(bool?), typeof(MinimizableGridControl), new PropertyMetadata(null));
 
 
         //To change the speed for opening and closing...
@@ -121,7 +238,7 @@ namespace MinimizableGrid.CustomControls
         }
 
         public static readonly DependencyProperty AnimationTimeProperty =
-            DependencyProperty.Register("AnimationTime", typeof(double), typeof(MinimisableGridClass), new PropertyMetadata(default(double), (o, e) => ((MinimisableGridClass)o).AnimationTimeChanged(o, e)));
+            DependencyProperty.Register("AnimationTime", typeof(double), typeof(MinimizableGridControl), new PropertyMetadata(default(double), (o, e) => ((MinimizableGridControl)o).AnimationTimeChanged(o, e)));
 
         private void AnimationTimeChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
@@ -135,7 +252,7 @@ namespace MinimizableGrid.CustomControls
         }
 
         public static readonly DependencyProperty IsShowingMinimizedViewProperty =
-            DependencyProperty.Register("IsShowingMinimizedView", typeof(bool), typeof(MinimisableGridClass), new PropertyMetadata(false));
+            DependencyProperty.Register("IsShowingMinimizedView", typeof(bool), typeof(MinimizableGridControl), new PropertyMetadata(false));
 
 
         //To allow horrizontal and vertical minimization animation
@@ -146,7 +263,7 @@ namespace MinimizableGrid.CustomControls
         }
 
         public static readonly DependencyProperty FlowOrientationProperty =
-            DependencyProperty.Register("FlowOrientation", typeof(Orientation), typeof(MinimisableGridClass), new PropertyMetadata(Orientation.Vertical));
+            DependencyProperty.Register("FlowOrientation", typeof(Orientation), typeof(MinimizableGridControl), new PropertyMetadata(Orientation.Vertical));
 
 
         //To set the Fly out direction
@@ -158,7 +275,7 @@ namespace MinimizableGrid.CustomControls
 
         // Using a DependencyProperty as the backing store for MinimizeDirection.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MinimizeDirectionProperty =
-            DependencyProperty.Register("MinimizeDirection", typeof(MinimizeFlow), typeof(MinimisableGridClass), new PropertyMetadata(MinimizeFlow.TowardsRightOrTowardsBottom));
+            DependencyProperty.Register("MinimizeDirection", typeof(MinimizeFlow), typeof(MinimizableGridControl), new PropertyMetadata(MinimizeFlow.TowardsRightOrTowardsBottom));
 
         //Common StoryBoard for the Grid
         private Storyboard _slideStoryBoard = new Storyboard();
@@ -171,9 +288,9 @@ namespace MinimizableGrid.CustomControls
         private void _slideStoryBoard_Completed(object sender, object e)
         {
             //Set the IsShowingMinimizedView to true on Animation completed when minimized as untill it's done the Grid is not yet minimized
-            if (this.IsMinimised)
+            if (this.IsMinimized)
                 this.IsShowingMinimizedView = true;
-          
+
             //for c# 6.0 use this:
             OperationCompleted?.Invoke(this, CurrentElement);
 
